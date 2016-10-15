@@ -1,0 +1,129 @@
+<!DOCTYPE HTML>
+<meta charset='utf-8'/>
+<div id='div'></div>
+<script type="text/javascript">
+	//原型模式是指用原型实例指向创建的对象的种类，并且通过拷贝这些原型创建新的对象。
+	//对于原型模式，可以利用javaScript特有的原型继承特性去创建对象的方式，真正的原型继承的方式是通过Object.create方法来创建这样的对象。
+	
+	//原型模式的作用
+		//（1）原型对象本身就是有效利用了每个构造器创建对象。
+		//注意事项？
+			//（1） 需要注意的依然是深拷贝和浅拷贝的问题
+			//（2）	在javaScript当中，不存在类 class的概念~
+	//原型对象实际上是一个共享的对象，不论是父对象的实例对象，还是子对象的继承，都是对他们指向的一个引用。
+	//所以原型对象才会被共享，加入会被共享的话，那么在原型对象上进行扩展。不论是子对象或者是父对象的实例，都会被继承下来
+
+
+
+		function $(id){ return document.getElementById(id)};
+		//深拷贝和浅拷贝
+		var myObj={
+			string:"这是我的对象",
+			arr:[1,2,3],
+			name:{
+				myName:"小王"
+			}
+		};
+
+		var herObj={};
+		for(var k in myObj){
+
+			herObj[k]=myObj[k];
+		}
+
+		console.log(herObj);
+
+		herObj.string='修改了其中的内容';
+
+		console.log(myObj.string);
+
+		var loopImages=function(imgArray , container ){
+			this.imgArray=imgArray;
+			this.container=container;
+			this.objInfo=function(){
+				console.log(this.imgArray+'--'+this.container);
+			}
+		}
+
+		loopImages.prototype=function(){
+			//创建轮播图片
+			this.create=function(){
+				console.log('原型当中的方法');
+			},
+			this.changeImage=function(){
+				console.log('原型当中的changeImage的方法');
+			}
+			this.kuozhan=function(){
+				console.log('扩展');
+			}
+		}
+
+		//创建上下切换效果
+		function upAndDown(imgArray , container){
+			loopImages.call(this , imgArray , container);
+		}
+		upAndDown.prototype=new loopImages.prototype;
+		upAndDown.prototype.create=function(){
+			console.log('上下切换效果create方法');
+		}
+		upAndDown.prototype.changeImage=function(){
+			console.log('上下切换效果changeImage的方法');
+		}
+
+		//实例化上下切换效果
+		var upAndDown=new upAndDown(['1.png','2.png'],$('div'));	
+		upAndDown.objInfo();
+		upAndDown.create();
+		upAndDown.changeImage();
+
+		//创建左右滑动的效果
+		function slide(imgArray , container){
+			loopImages.call(this,imgArray,container);
+		}		
+
+		slide.prototype=new loopImages.prototype;
+		//实例化左右滑动效果
+		slide.prototype.create=function(){
+			console.log('左右滑动效果当中的ceate方法');
+		}
+		slide.prototype.changeImage=function(){
+			console.log('左右滑动效果当中的changeImage方法');
+		}
+		var slide =new slide();
+
+		slide.create();
+		slide.changeImage();
+		slide.objInfo();
+		slide.kuozhan();
+
+
+		function extend(){
+			var F=function(){};
+			var arg=arguments,
+				len=arg.length;
+
+			for(var i =0;i<len;i++){
+				for(var k in arg[i]){
+					F.prototype[k]=arg[i][k]
+				}
+			}
+			console.log(new F());
+			return new F();
+		}
+
+		//原型模式实质上也是一种继承。可以让多个对象继承一个对象的属性和方法。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</script>

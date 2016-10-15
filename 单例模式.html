@@ -1,0 +1,222 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta charset='UTF-8'/>
+		<title>单例模式</title>
+	</head>
+	<body id='body'>
+
+
+		<script type="text/javascript">
+
+		//通过单例模式只能实例化出一个对象。如果这个对象不存在，那么将会创建这个对象，如果这个对象已经存在了，那么就会返回这个对象的引用~
+		//单例模式的不足之处:存在着隐藏的依赖关系。或者是高度的耦合。很难创建多个实例等。
+
+		var danli=(function(){
+			var _instance;
+			function init(){
+				var _siyouVar = '这是私有变量';
+				var _siyouFn = '这是私有的方法';
+
+				return {
+					getVar:function(){
+						console.log(_siyouVar);
+					},
+					getFn:function(){
+						console.log(_siyouFn);
+					}
+				}
+			}
+			return {
+				getInstance:function(){
+					if(!_instance){
+						return	_instance=init();
+					}
+					return _instance;
+				}
+			}
+		})()
+
+		danli.getInstance().getVar();
+		danli.getInstance().getFn();
+
+		//添加创建遮罩层的单例
+		var createMask=(function(){
+			var mask;
+			
+			function init(){
+				this.createMaskFn=function(){
+					console.log('插入元素');
+				}
+			}
+
+			return {
+				create:function(){
+					console.log('调用成功');
+					if(!mask){
+						mask =new init();
+					}
+					return mask;
+				}
+			}
+		})()
+
+		var cc=createMask.create();
+		cc.createMaskFn();
+
+
+
+
+
+
+
+
+
+
+		function $(id){
+			return document.getElementById(id);
+		}
+
+		// var mask;
+		// function appendDiv(){
+		// 	console.log(mask);
+		// 	return function(){
+		// 		if(mask){
+		// 			alert('21');
+		// 			return mask;
+		// 		}else{
+		// 			var div=document.createElement('div');
+		// 			mask=$('body').appendChild(div);
+		// 		}
+		// 	}
+		// }
+
+		// appendDiv()();
+		// appendDiv()();
+
+
+		var mask;
+
+		var appendDiv = function(){
+			console.log(mask);
+			function Append(){
+				this.appendNode=function(){
+					$('body').appendChild(document.createElement('div'));
+				}
+			}
+			return function(){
+				if(mask){
+					console.log('第一次');
+					return mask.appendNode();
+				}else{
+					console.log('没进入');
+					mask = new Append();
+					return mask.appendNode();
+				}
+			}
+		}
+
+		// appendDiv()();
+		// appendDiv()();
+		// appendDiv()();
+
+
+		//（1）单例模式
+		var singletonModule={
+			attr:'one',
+			attr2:"tow"
+		}
+
+		//（2）包含私有属性的单例模式
+
+		function singletonModuleFn(){
+			//设置内部私有属性
+			var _singleVar=10;
+
+			//修改私有属性的值
+			function f1(){
+				_singleVar++;
+			}
+
+			f1();
+			//返回一个对象，在这个对象的内部修改了私有变量的值。
+			return singleObj = {
+				num:_singleVar
+			}
+		}
+
+		var o=singletonModuleFn();
+		console.log(o.num);
+
+		//（3）采用闭包的形式
+
+		var singleFn=(function(){
+
+			var _num=10;
+
+			function f1(){
+				_num++;
+			}
+
+			f1();
+
+			return {
+				attr:_num
+			}
+
+		})()
+
+
+		console.log(singleFn.attr)
+
+		//（4）惰性加载，需要的时候在创建的单例模式，以上几种方式都是在定义的时候就创建了单例模式，这样很浪费内存
+		//所谓懒加载，就是先定义好了，然后再使用的时候在创建对象，所以必须要使用函数。
+		console.log('------------------------------------------------------------')
+
+		var lazySingle=function(){
+
+			var _instan=null;
+
+			console.log( _instan );
+			//单例
+			function singleF(){
+				return {
+					attr:"1212"
+				}
+			}
+
+			return function(){
+				if( !_instan ){
+					_instan=singleF();
+				}
+				return _instan;
+			}
+		}
+
+		console.log(lazySingle()().attr);
+
+		
+		//管理静态变量，且不可让变量对外进行修改。
+		function controlVar(){
+			var personObj={
+				pName:"smith",
+				pAge:20,
+				pLike:'girl'
+			}
+			return {
+				getPname:function(){
+					return personObj['pName'] ? personObj['pName'] : 'chang';
+				}
+			}
+		}
+
+		console.log( controlVar().getPname() );
+
+
+
+
+
+
+		</script>
+	</body>
+</html>

@@ -1,0 +1,138 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset='UTF-8'/>
+	<title></title>
+</head>
+<body>
+	<script type="text/javascript">
+		(function(){
+
+
+			//原型继承
+			//一个函数对象，通过实例化他的父对象，然后让这个的函数的原型继承这个实例化的父对象。
+			//这个时候如果父对象当中的属性或者方法存在引用类型的，如果其中的一个子对象的实例修改了父对象的引用类型的属性，那么所有的子对象继承过来的属性都会被修改
+
+			/***********子对象的原型上实例化父对象。***********/
+			function superFn(){
+				this.starts=['任达华','吴京','古天乐','余文乐'];
+			};
+
+			superFn.prototype.sayStarts=function(){
+				console.log(this.starts);
+			}
+
+			function subFn(){};
+			subFn.prototype=new superFn();  
+
+			var instance1=new subFn();
+			var instance2=new subFn();
+
+			instance1.starts.push('吴镇宇');  //instance1修改了superFn当中的stars属性。
+			console.log( instance2.starts );  //然后instance2当中的属性也会跟着改变  ['任达华'，'吴京' ,'古天乐','余文乐','吴镇宇']
+
+			//子对象的原型实例化父对象，也就是继承了父对象原型上的方法和构造函数的当中的属性和方法。
+			//这种原型继承的方式缺点就是在于：子对象通过原型来对父对象实例化，继承了父对象， 如果父对象当中的属性存在引用类型，那么就会被所有的子对象实例所共用。
+			//因此，一个子对象的实例更改了子对象原型从父对象构造函数中继承来的共有属性，那么就会直接影响其他子对象。
+
+			
+
+			
+			/*****************构造函数继承******************/
+
+			function parentFn(id){
+				this.id=id;
+				this.like=['你妈妈','你奶奶'];
+			}
+			
+			parentFn.prototype.sayLvoeTime=function(){
+				console.log('2016-03-24');
+			};
+
+			function childFn( id ){
+				parentFn.call(this,id);
+			}	
+
+			childFn.prototype.sayId=function(){
+				console.log(this.id);
+			};
+
+			var child_1=new childFn('吴奇隆');
+			var child_2=new childFn('刘诗诗');
+
+			// child_1.like.push('常运涛');
+
+			// console.log(child_1.like);
+			// console.log(child_1.id);
+			// console.log(child_1.sayId());
+
+			// console.log(child_2.like);
+			// console.log(child_2.id);
+			// console.log(child_2.sayId());
+
+			//这种方式的特点就是在子对象当中执行了一次父对象的构造函数。但是子对象的不会继承父对象原型当中的方法。 如果想要被子对象继承，那么父对象的原型也要放在子对象的构造函数当中。
+
+			//原理解释：call的这种方法可以更改函数的作用环境， 这种继承的方式不设计到原型，所有父对象原型当中的属性和方法是不能被继承的。
+
+		})()
+		/**********************组合继承的方式*************************/
+
+		function parentFn(id){
+			this.id=id
+			this.books=['javaScript','html','css'];
+		};
+
+		parentFn.prototype.sayId=function(){
+			console.log(this.id+'，原型当中的方法');
+		};
+
+		function childFn(id,person){
+			parentFn.call(this,id);
+			this.like=person;
+		}
+
+		childFn.prototype=new parentFn();
+
+		var p1=new childFn('陈冠希','张柏芝');
+		var p2=new childFn('李欣烨','婷婷');
+		p1.books.push('摄影师');
+
+		p1.sayId=function(){
+			console.log('p1修改了原型当中的方法');
+		}
+		console.log( p2.sayId() );
+
+		console.log(p1.id);
+		console.log(p1.sayId());
+		console.log(p1.like);
+		console.log(p1.books);
+
+		//这种组合继承的优点就是，如果实例化的子对象修改了父对象当中的引用类型的数据，不会影响到其他的子类。同时，在子对象当中还可以传递参数来对父对象进行实例化。
+		//唯一的缺点就是在实例化子类的时候，调用了一次子类的构造函数，同时在子类的构造函数的内部又调用了一次对象的构造函数。 
+
+		/*************************洁净的继承者 ，原型继承******************************/
+		//这种继承方式和原型继承方式比较类似
+
+		(function(){
+
+			var books={
+				html:"html books",
+				css:"css books"
+			}
+
+			function createFn(obj){
+				function F(){};
+				F.prototype=obj;
+				return new F(obj);
+			}
+
+			var child1=createFn(books);
+			console.log(child1.books);
+		
+		})()
+
+
+
+	</script>
+</body>
+</html>

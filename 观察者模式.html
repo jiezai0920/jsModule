@@ -1,0 +1,196 @@
+<!DOCtype HTML>
+<html>
+<head>
+	<meta charset='utf-8'/>
+	<title>观察者模式</title>
+	<style type="text/css">
+		ul li{
+			list-style: none;
+			background:#ddd;
+			margin-top:10px;
+			width:200px;
+		}
+	</style>
+</head>
+<body>
+	<button id='btn'>Click</button>
+	<p>当前用户[王振杰] 一共收到<span id='span'>4</span>条消息</p>
+	<ul id='textBox'>
+		<li>添加第1条评论</li>
+		<li>添加第2条评论</li>
+		<li>添加第3条评论</li>
+		<li>添加第4条评论</li>
+	</ul>
+	<textarea id='textarea' style='width:100px;height:100px;'></textarea>
+	<button id='add'>提交</button>
+	<button id='delete'>删除</button>
+
+	<script type="text/javascript">
+		//观察者模式解决的是复杂系统当中的松散耦合的问题。
+		//观察者模式也叫做订阅者/发布者模式、
+		//常用的场景，比如在开发当中，每个模块都是由不同的人完成的，那么这些模块是如何通信的呢？
+		//不想让自己的模块和被人的模块严重的耦合在一起。
+		//这就需要用到观察者模式。
+
+		//用观察者模式来解决问题，就要知道哪些模块注册信息。哪些模块发布信息
+
+		function $(id){ return document.getElementById(id)}
+
+		//观察者主体对象。
+		var Observe=(function(){
+			_mesage={};
+			return {
+				regist:function(type,fn){
+					if(typeof _mesage[type] ==='undefined'){
+						console.log(_mesage);
+						_mesage[type]=[fn];
+					}else{
+						_mesage[type].push(fn);
+					}
+				},
+				fire:function(type,events){
+					if(!_mesage[type]){ return };
+					var i=0,
+						len=_mesage[type].length;
+					
+					for(;i<len;i++){
+						_mesage[type][i].call(this,events);
+					}
+				}
+			}
+		})()
+
+		//添加评论模块
+		function addComment(events){
+				var textarea=$('textarea');
+				if(textarea.value==''){
+					alert('请填写评论内容');
+					return false;
+				}else{
+					var	text=textarea.innerHTML,
+						textBox=$('textBox'),
+						li=document.createElement('li');
+
+					li.innerHTML = textarea.value;
+					textarea.value='';
+				}
+			textBox.appendChild(li);
+		}
+		Observe.regist('addCommentMesage',addComment);
+
+		//用户消息递增或者递减的情况
+		function changeMesage(){
+			var ul =$('textBox');
+			var liList=ul.getElementsByTagName('li');
+			var num=liList.length;
+			$('span').innerHTML=parseInt(num);
+		}
+		Observe.regist('changeMesage',changeMesage);
+
+		$('add').onclick=function(){
+			Observe.fire('addCommentMesage');
+			Observe.fire('changeMesage');	
+		}
+
+		//删除评论
+		function deleteComment(){
+			liList=$('textBox').getElementsByTagName('li');
+			console.log(liList);
+			$('textBox').removeChild(liList[liList.length-1]);
+			var num=liList.length;
+			$('span').innerHTML=parseInt(num);
+		}
+
+		Observe.regist('deleteComment',deleteComment);
+
+		$('delete').onclick=function(){
+
+			Observe.fire('deleteComment');
+		
+		}
+
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		var Observer=(function(){
+			var _mesage={};
+			return{
+				//注册消息
+				regist:function(type,fn){
+					if(typeof _mesage[type] ==='undefined' ){
+						_mesage[type]=[fn];
+					}else{
+						_mesage[type].push(fn);
+
+					}
+				},
+				//发布消息
+				fire:function(type , args){
+					if(!_mesage[type]){ return };
+					var events={
+						type:type,
+						args:args||{}
+					},
+					i=0,
+					len=_mesage[type].length;
+					for(;i<len;i++){
+						_mesage[type][i].call(this,events);
+					}
+				},
+				remove:function(){}
+			}
+		})()
+		//第一次注册的情况
+		Observer.regist('test',function(e){
+			console.log(e.type,e.args.msg);
+		});
+		Observer.fire('test',{msg:'传递参数'});
+
+		//在注册一次
+		Observer.regist('test',function(){
+			console.log('第二次注册');
+		});
+		Observer.fire('test');
+
+		function f1(){ console.log('消息1');}
+		function f2(){ console.log('消息2');}
+		$('btn').onclick=function(){
+			Observer.regist('f1',f1);
+			Observer.fire('f1');
+		}
+
+
+
+	</script>
+</body>
+</html>

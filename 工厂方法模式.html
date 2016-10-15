@@ -1,0 +1,30 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset='utf-8'/>
+	<title>js工厂方法模式</title>
+</head>
+<body>
+	<script type="text/javascript">
+		var ballShop=function(type){
+			if(this instanceof ballShop){
+				return new ballShop();
+			}else{
+				return new ballShop();
+			}
+
+			this.type=type;
+		};
+
+		ballShop.prototype={
+			switch(this.type){
+				case "basketball":
+					console.log('我喜欢篮球运动');
+					break;
+			}
+		}
+
+		var ballExample=new ballShop("basketball");
+	</script>
+</body>
+</html>

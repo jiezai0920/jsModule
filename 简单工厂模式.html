@@ -1,0 +1,258 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset='UTF-8'>
+	<title></title>
+	<style type="text/css">
+		button{
+			width:300px;
+			height:100px;
+			display: block;
+			margin:0 auto;
+			margin-top:200px;
+			text-align:center;
+			line-height:100px;
+			font-size:30px;
+		}
+	</style>
+</head>
+<body>
+
+	<div id='factoryDom'>工厂模式设置内容</div>
+
+	<button id='button'>登陆（模拟登陆）</button>
+	<script type="text/javascript">
+		//简单工厂模式 ， 也叫静态方法。 由一个工厂对象决定创建某种产品对象的实例。主要用来创建同一种对象。
+		//
+		function $(id){ return document.getElementById(id) };
+
+		var loginFactory=function(type,text){
+			function loginInfo(text){
+				this.text=text;
+			}
+			loginInfo.prototype.showText=function(){
+				alert(this.text);
+			}
+
+			switch(type){
+				case "alert" :
+					new loginInfo(text).showText();
+					break;
+				case "warning" :
+					new loginInfo(text).showText();
+					break;
+			}
+		}
+
+		$('button').onclick=function(){
+			// loginFactory('alert','恭喜您登陆成功');
+			loginFactory('warning','警告，闪电风暴正在接近当中;');
+		}
+
+
+		//创建安全的对象
+		function createSafeObj(create,info){
+			if(this instanceof createSafeObj){
+				this.create=create;
+				this.info=info;
+			}else{
+				return new createSafeObj(create,info);
+			}
+		}
+		var c=createSafeObj('cty','我创建的个人信息');
+
+		console.log(c.create);
+		console.log(c.info);
+
+		// //通过工厂模式来控制。元素当中放入不同的内容
+
+		// function $(id){ return document.getElementById(id)};
+
+		// function domList(){
+		// 	page.dom.link=function(){
+		// 		this.insert=function(){
+		// 			console.log('1');
+		// 		}
+		// 	}
+		// 	page.dom.image=function(){
+		// 		this.image
+		// 		console.log('2');
+		// 	}
+			
+
+		// }
+
+
+
+		// function domFactory(type){
+		// 	return new domStyle(type);
+		// }
+
+
+		//创建篮球运动
+		function BasketBall(startName){
+			this.startName=startName;
+		}
+
+		BasketBall.prototype={
+			getStartName:function(){ console.log('当红明星是'+this.startName);},
+			getMember:function(){ console.log( '一队5个人' );},
+			getTime:function(){ console.log( '一共分为4节' );}
+		}
+
+		//创建足球运动
+		function football(startName,info){
+			this.startName=startName;
+		}
+		football.prototype={
+			getStartName:function(){ console.log('当红明星是'+this.startName);},
+			getMember:function(){ console.log('一队有11个人')},
+			getTime:function(){ console.log('比赛时间为90分钟');}
+		}
+
+		//创建乒乓球运动
+		function pingpangBall(startName){
+			this.startName=startName;
+		}
+		pingpangBall.prototype={
+			getStartName:function(){ console.log('当红明星是'+this.startName);},
+			getMember:function(){ console.log('两人对决的方式');},
+			getTime:function(){ console.log('比赛为先到12球这赢');}
+		}
+
+		//创建工厂
+
+		function Factory(type){
+			switch(type){
+				case "basketBall" :
+					return new BasketBall('kobe');
+				case "football" :
+					return new football('内马尔');
+				case "pingpangBall" :
+					return new pingpangBall('刘国栋');
+			}
+		}
+
+		//实例化篮球运动
+		var basketBall = new Factory('basketBall');
+		console.log(basketBall.getStartName('kobe'));
+
+		//实例化足球运动
+
+		var football=new Factory('罗纳尔多');
+		console.log(basketBall.getStartName('kobe'));
+
+		//实例化乒乓球运动
+		var pingpang=new Factory('pingpangBall');
+		console.log(pingpang.getStartName('刘国栋'));
+
+		//在上面的这个例子当中，存在很多相同的，或者是相似的方法。可以将这些东西都提取出来。
+		//然后将差异化的属性和方法进行单独设置。
+
+		
+		//在这个例子当中，提取了三种球类运动的属性，通过传入参数，根据差异化的部分不同设置ballObject.show的方法。
+		function createBall(type,startName,startAge){
+			var ballObject={};
+			ballObject.startName=startName;
+			ballObject.age=startAge;
+		
+			if( type=='basketBall'){
+				ballObject.show=function(){
+					alert('我很喜欢kobe');
+				}
+			}else if( type='football'){
+				ballObject.show=function(){
+					alert(' 我很喜欢msn 组合');
+				}	
+			}else{
+				ballObject.show=function(){
+					alert('我没喜欢的运动');
+				}
+			}
+
+			return ballObject;
+		}
+
+		var footBall=createBall('football','内马尔');
+		console.log(footBall.show());
+		console.log(footBall.startName);
+
+		var basketBall=createBall('basketball' , 'kobe');
+		console.log(basketBall.startName);
+		
+		//在创建的两个球类运动当中。
+		//第一个方法用的是实例化对象。
+		//第二个方法用的是创建一个新的对象，在对象当中新增了属性和方法。
+
+		// var Factory=function(type,content){
+		// 	if(this instanceof Factory){
+		// 		alert('1');
+		// 		console.log(this[type]);
+		// 		var s=new this[type](content);
+
+		// 		return s;
+		// 	}else{
+		// 		alert('2');
+		// 		return new Factory(type ,content );
+		// 	}
+		// }
+
+		// Factory.prototype={
+		// 	javaScript:function(){ console.log('这是javaScript')},
+		// 	php:function(){ console.log('这是PHP')}
+		// }
+
+		// Factory('javaScript');
+		// Factory('php');
+
+
+		//-----------------------------------------------------------------------------
+
+		var parent=function(type){
+			if(this instanceof parent){
+				var s=new this[type]();
+				return s;
+			}else{
+				return new parent(type);
+			}
+		};
+		parent.prototype={
+			girl:function(){ console.log('这是我闺女');},
+			son:function(){ console.log('这是我儿子');},
+			wife:function(){ console.log( '这是我的妻子');}
+		}
+
+		var girl=parent("girl");
+		var wife=parent("wife");
+		var son=parent('son');
+
+		//在上面这种方法当中，相当于在parent的原型当中注册了方法。 在实例的时候，只需要通过传入要实例化的方法的type类型，
+		//作用域链就会向上去查找，找到之后就会实例化！！。
+
+
+		//在这个方法模式当中。
+		//（1）添加了一个安全的保护。防止在调用的时候忘记添加new。
+		//（2）在parent对象的原型上添加了对象，然后通过作用域链去向上寻找。最后找到this[type]属性对应的方法 然后再new这个方法。
+
+		//解释下new的作用？
+		//1，创建一个新对象
+		//2，将this指向这个新对象。
+		//3，为这个对象添加属性。
+		//4，返回这个对象。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	</script>
+</body>
+</html>
